@@ -1393,30 +1393,39 @@ window.openInsights = async function() {
     return;
   }
 
-  // Construir resumen de datos para el prompt
-  var deptSummaries = realDepts.map(function(d) {
-    var dIdx = DEPTS.indexOf(d);
-    var avg = AVERAGES[dIdx];
-    var qScores = QUESTIONS.map(function(q, qi) {
-      var v = SCORES[qi][dIdx];
-      return v !== null && v !== undefined && !isNaN(v) ? q + ": " + v.toFixed(1) : q + ": N/A";
-    }).join(", ");
-    var comments = (COMMENTS[d] || []).slice(0, 10).join(" | ");
-    var part = PARTICIPATION[d] ? ("Enviados: " + PARTICIPATION[d].sent + ", Respondieron: " + PARTICIPATION[d].ans) : "Sin datos de participación";
-    return "Departamento: " + d + " (Dirección: " + (DEPT_TO_DIR[d]||'General') + ")\n  Promedio general: " + (avg ? avg.toFixed(2) : 'N/A') + "/10\n  Puntajes por pregunta: " + qScores + "\n  Participación: " + part + (comments ? "\n  Comentarios: " + comments : "");
-  }).join("\n\n");
+  // Construir resumen optimizado (mínimo de tokens, máximo de valor)
+  var globalAvgAll = 0, countAll = 0;
+  realDepts.forEach(function(d){ var a = AVERAGES[DEPTS.indexOf(d)]; if(a>0){globalAvgAll+=a;countAll++;} });
+  var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : 'N/A';
 
-  var prompt = "Eres un consultor experto en Evaluación de Clima Organizacional y Servicio Interno. Analiza los siguientes datos de una encuesta de satisfacción interna de una empresa y genera un ANÁLISIS EJECUTIVO profesional en español.\n\n" +
-    "DATOS DE LA EVALUACIÓN:\n" + deptSummaries + "\n\n" +
-    "INSTRUCCIONES:\n" +
-    "- Genera el análisis en HTML usando únicamente estas etiquetas: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n" +
-    "- Estructura el análisis en 4 secciones: 1) Panorama General y Participación, 2) Fortalezas Clave, 3) Áreas de Oportunidad y Riesgos, 4) Plan de Acción Recomendado\n" +
-    "- Sé específico: menciona nombres reales de departamentos y cifras exactas\n" +
-    "- Tono ejecutivo, directo y orientado a la acción\n" +
-    "- Identifica patrones, correlaciones y riesgos reales basados en los datos\n" +
-    "- Para la sección de Plan de Acción usa la clase 'highlight'\n" +
-    "- NO incluyas texto fuera del HTML, NO uses markdown, NO pongas explicaciones previas\n" +
-    "- Responde SOLO con el HTML del análisis";
+  // Top 3 mejores y peores departamentos
+  var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||'General'}; }).sort(function(a,b){return b.avg-a.avg;});
+  var top3 = deptAvgs.slice(0,3).map(function(x){ return x.d+"("+x.avg.toFixed(1)+")"; }).join(", ");
+  var bot3 = deptAvgs.slice(-3).map(function(x){ return x.d+"("+x.avg.toFixed(1)+")"; }).join(", ");
+
+  // Mejor y peor pregunta
+  var bestQ='', worstQ='', bestQv=-1, worstQv=11;
+  QUESTIONS.forEach(function(q,qi){
+    var vals = realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
+    if(vals.length){var m=vals.reduce(function(a,b){return a+b;},0)/vals.length; if(m>bestQv){bestQv=m;bestQ=q;} if(m<worstQv){worstQv=m;worstQ=q;}}
+  });
+
+  // Participación global
+  var tS=0, tA=0;
+  realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
+  var partStr = tS>0 ? (tA+"/"+tS+" ("+(tA/tS*100).toFixed(0)+"%)") : "Sin datos";
+
+  // Comentarios: máximo 5 en total, los más cortos
+  var allComments = [];
+  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c && c.length>5 && c.length<120) allComments.push(c); }); });
+  allComments = allComments.slice(0,5);
+
+  var prompt = "Analiza esta encuesta interna y genera análisis ejecutivo en HTML (español).\n" +
+    "DATOS: Promedio global: " + globalAvg + "/10 | Participación: " + partStr + "\n" +
+    "Mejores: " + top3 + " | Peores: " + bot3 + "\n" +
+    "Mejor pregunta: \"" + bestQ + "\" (" + bestQv.toFixed(1) + ") | Peor: \"" + worstQ + "\" (" + worstQv.toFixed(1) + ")\n" +
+    (allComments.length ? "Comentarios: " + allComments.join(" / ") + "\n" : "") +
+    "HTML REQUERIDO: 4 secciones con <div class='insight-section-title'> y <div class='insight-p'>. Última sección usa <div class='insight-p highlight'>. Sin markdown, solo HTML. Menciona nombres y cifras reales. Tono ejecutivo directo.";
 
   try {
     var response = await fetch("/api/analyze", {
