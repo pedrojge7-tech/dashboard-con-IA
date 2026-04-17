@@ -111,48 +111,32 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .btn-share{background:var(--if-navy);color:#fff;}
 .btn-share:hover{background:var(--if-navy-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21, 33, 48, 0.15);}
 
-/* ── BOTÓN SÚPER LLAMATIVO DE ANÁLISIS IA (GRADIENTE ANIMADO Y PULSO) ── */
+/* ── BOTÓN SÚPER LLAMATIVO DE ANÁLISIS IA ── */
 .insight-container { display: flex; justify-content: center; margin-bottom: 32px; margin-top: 10px; padding: 0 40px; }
 .btn-insight-master { 
   background: linear-gradient(45deg, #FF512F 0%, #F09819 51%, #FF512F 100%);
   background-size: 200% auto;
-  color: #fff; 
-  border: none; 
-  padding: 16px 38px; 
-  border-radius: 50px; 
-  font-size: 1.15rem; 
-  font-weight: 800; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  font-family: var(--font); 
+  color: #fff; border: none; padding: 16px 38px; border-radius: 50px; 
+  font-size: 1.15rem; font-weight: 800; cursor: pointer; display: flex; 
+  align-items: center; gap: 10px; font-family: var(--font); 
   box-shadow: 0 4px 15px rgba(240, 152, 25, 0.4);
   transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   letter-spacing: 0.02em;
   animation: gradient-shift 3s linear infinite, pulse-neon 2s infinite;
 }
-.btn-insight-master:hover { 
-  transform: scale(1.03) translateY(-2px); 
-  box-shadow: 0 8px 25px rgba(240, 152, 25, 0.6); 
-  filter: brightness(1.05);
-}
-.btn-insight-master:active { 
-  transform: scale(0.98); 
-}
+.btn-insight-master:hover { transform: scale(1.03) translateY(-2px); box-shadow: 0 8px 25px rgba(240, 152, 25, 0.6); filter: brightness(1.05); }
+.btn-insight-master:active { transform: scale(0.98); }
 
 @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-@keyframes pulse-neon { 
-  0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 
-  70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 
-  100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } 
-}
+@keyframes pulse-neon { 0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } }
 body.reader-mode .insight-container { display: none !important; }
 
 /* ── READER EYE BADGE ── */
 #readerBadge{display:none;position:fixed;bottom:24px;right:24px;background:var(--surface);color:var(--text);border: 1px solid var(--border);border-radius:50px;padding:10px 18px;font-weight:600;font-size:.75rem;z-index:500;box-shadow:var(--shadow-md);align-items:center;gap:8px;pointer-events:none;}
 body.reader-mode #readerBadge{display:flex!important;}
-body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge{display:none!important;}
+
+/* Esconde botones de admin en modo lector, INCLUYENDO EL DE NPS */
+body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode #btnNPS, body.reader-mode .badge {display:none!important;}
 
 /* ── MAIN ── */
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
@@ -241,7 +225,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rl-chip{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.72rem;color:var(--text);white-space:nowrap;}
 .rl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
 
-/* ── RANKING POR PREGUNTA (100% VISIBLE CON MICRO SCROLL EN PREGUNTAS) ── */
+/* ── RANKING POR PREGUNTA (TEXTO SIEMPRE COMPLETO) ── */
 .rank-list{display:flex;flex-direction:column;gap:10px;flex-grow:1;overflow-y:auto; overflow-x:auto; padding-right:8px; padding-bottom: 8px;}
 .rank-list::-webkit-scrollbar{width:6px; height: 6px;}
 .rank-list::-webkit-scrollbar-track{background:transparent;}
@@ -251,31 +235,13 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:24px;min-height:52px; transition: border-color 0.2s; min-width: max-content;}
 .rank-item:hover { border-color: var(--if-gray-300); }
 
-/* Pregunta: Con Scroll Horizontal Propio */
-.rank-q-wrap {
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  padding-bottom: 4px;
-  margin-right: 12px;
-}
-/* Micro Scrollbar para Preguntas */
-.rank-q-wrap::-webkit-scrollbar { height: 4px; }
-.rank-q-wrap::-webkit-scrollbar-track { background: transparent; }
-.rank-q-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
-.rank-q-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
-
-.rank-q-inner { display: inline-block; white-space: nowrap; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0;}
+/* Obligamos al texto a hacer salto de línea siempre */
+.rank-q-wrap { flex: 1; min-width: 0; white-space: normal; padding-bottom: 4px; margin-right: 12px; overflow: visible;}
+.rank-q-inner { display: inline-block; white-space: normal; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0; line-height:1.4;}
 
 .rank-badges{flex-shrink:0; display:flex; gap:12px; align-items:center;}
-
-/* Badges (Departamentos): Visibles por completo sin scroll ni cortes */
 .rank-badge{ display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-weight:700; font-size: .75rem; }
-.rb-name-wrap { 
-  flex: 1 1 auto; 
-}
+.rb-name-wrap { flex: 1 1 auto; }
 .rb-name-inner { display: inline-block; white-space: normal; font-weight: 600; text-align: left;}
 
 .badge-best{background:var(--success-bg);color:var(--success);}
@@ -285,19 +251,14 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);margin-bottom:24px;overflow-x:auto;}
 table{width:100%;border-collapse:separate;border-spacing:0;font-size:.85rem;}
 
-/* DELIMITADORES VERTICALES GRUESOS */
 .border-right-bold { border-right: 3px solid #CBD5E1 !important; }
-
-/* ENCABEZADOS TABLA FIJOS (DEPARTAMENTOS EN VARIAS LÍNEAS) */
 thead th{background:var(--surface2);padding:12px 16px;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);text-align:center; white-space: normal; word-wrap: break-word; min-width: 120px; vertical-align: bottom;}
 thead th:first-child { border-top-left-radius: var(--rs); }
 thead th:last-child { border-top-right-radius: var(--rs); }
 tbody tr{transition:background .15s;}
-tbody tr:hover{background:var(--surface2);}
 tbody td{padding:14px 16px;font-weight:500;color:var(--text);vertical-align:middle;text-align:center;border-bottom:1px solid var(--surface2);}
 tbody td:first-child { text-align: left; }
 
-/* CELDAS DE PREGUNTAS (TABLA DETALLADA): Completamente legibles en varias lineas */
 .q-cell { white-space: normal; font-size:.8rem; color:var(--if-navy); font-weight: 600; min-width: 250px; max-width: 350px; line-height: 1.5; text-align: left; }
 .q-cell-inner { display: inline; white-space: normal; }
 
@@ -305,6 +266,22 @@ tbody td:first-child { text-align: left; }
 .score-high{background:var(--success-bg);color:var(--success);}
 .score-mid{background:var(--warning-bg);color:#D97706;}
 .score-low{background:var(--danger-bg);color:var(--danger);}
+
+/* SOLUCIÓN: Congelar primera columna de la tabla detallada sin sobreposiciones */
+#detailTable { position: relative; border-collapse: separate; border-spacing: 0; }
+#detailTable th:first-child {
+  position: sticky; left: 0;
+  background: var(--surface2);
+  z-index: 20; /* Mayor que el td para que quede arriba */
+}
+#detailTable td:first-child {
+  position: sticky; left: 0;
+  background: var(--surface); /* Fondo sólido vital */
+  z-index: 10;
+}
+#detailTable tr:hover td:first-child {
+  background: var(--surface2);
+}
 
 /* ── COMMENTS ── */
 .dept-tabs{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
@@ -336,7 +313,7 @@ tbody td:first-child { text-align: left; }
 .comment-item{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--al,var(--text));border-radius:var(--rs);padding:16px 20px;font-weight:500;font-size:.85rem;line-height:1.6;color:var(--text);animation:fadeIn .3s ease; box-shadow: var(--shadow);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .no-comments{text-align:center;padding:48px;font-weight:500;color:var(--muted);font-size:.9rem; width: 100%; background:var(--surface2); border-radius:var(--rs); border: 1px dashed var(--border);}
-#commentsChartContainer { display:none; position:relative; height:360px; width:100%; margin-top:16px; animation:fadeIn .3s ease; }
+#commentsChartContainer { display:none; position:relative; height:360px; width:100%; margin-top:16px; margin-bottom: 24px; animation:fadeIn .3s ease; }
 
 /* ── MODALS Y TOASTS ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(21, 33, 48, .7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
@@ -356,6 +333,17 @@ tbody td:first-child { text-align: left; }
 .btn-reader{background:var(--primary);color:#fff;border:none;padding:10px 28px;border-radius:50px;font-family:var(--font);font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s;}
 .btn-reader:hover{background:var(--primary-hover);transform:translateY(-1px);box-shadow: 0 4px 12px rgba(224, 112, 16, 0.2);}
 
+/* ESTILOS PARA MODAL NPS Y GRÁFICAS */
+.nps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.nps-gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
+.nps-gauge-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.nps-gauge-title { font-weight: 800; font-size: .9rem; color: var(--if-navy); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 100%; white-space: normal; }
+.nps-gauge-wrapper { position: relative; width: 100%; max-width: 220px; display:flex; justify-content:center; }
+.nps-value-container { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom: 4px;}
+.nps-val { font-size: 2.8rem; font-weight: 900; color: var(--if-navy); line-height: 1; letter-spacing: -0.03em; z-index: 10;}
+.nps-lbl { font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; z-index: 10;}
+.nps-sub { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-top: 16px; text-align: center; width:100%;}
+
 .import-hint{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:16px;font-weight:500;font-size:.78rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
 .import-hint strong{display:block;margin-bottom:4px;font-weight:700;color:var(--if-navy);}
 .dropzone{border:2px dashed var(--border);border-radius:var(--rs);padding:40px 20px;text-align:center;background:var(--surface2);margin-bottom:24px;cursor:pointer;transition:all .2s;position:relative;}
@@ -373,33 +361,90 @@ tbody td:first-child { text-align: left; }
 .toast.ok{background:var(--success);}
 .toast.err{background:var(--danger);}
 
-/* ESTILOS DEL MODAL DE INSIGHTS PROFUNDOS */
-#insightModal .modal-box { width: 850px; max-width: 95vw; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; padding: 48px; }
+/* ESTILOS DEL MODAL DE INSIGHTS PROFUNDOS Y TABLAS IA */
+#insightModal .modal-box { width: 900px; max-width: 95vw; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; padding: 48px; }
 #insightModal .modal-box::-webkit-scrollbar { width: 6px; }
 #insightModal .modal-box::-webkit-scrollbar-track { background: transparent; }
 #insightModal .modal-box::-webkit-scrollbar-thumb { background: var(--if-gray-300); border-radius: 10px; }
 
-.insight-section-title { font-weight: 800; font-size: 1.15rem; color: var(--if-navy); margin-top: 32px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-.insight-p { background: var(--surface); border-radius: var(--rs); padding: 18px 24px; margin-bottom: 16px; font-size: .92rem; line-height: 1.7; border: 1px solid var(--border); border-left: 4px solid var(--if-navy); color: var(--text); box-shadow: var(--shadow); }
-.insight-p strong { color: var(--if-navy); font-weight: 800; font-size: .98rem; display: block; margin-bottom: 6px;}
+.insight-section-title { font-weight: 900; font-size: 1.3rem; color: var(--if-navy); margin-top: 40px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; text-transform: uppercase; letter-spacing: -0.02em;}
+.insight-p { background: var(--surface); border-radius: var(--rs); padding: 20px 28px; margin-bottom: 20px; font-size: .95rem; line-height: 1.7; border: 1px solid var(--border); border-left: 4px solid var(--if-navy); color: var(--text); box-shadow: var(--shadow); }
+.insight-p strong { color: var(--if-navy); font-weight: 800; font-size: 1rem; }
 .insight-p.highlight { background: var(--primary-light); border-color: var(--primary); border-left-width: 6px; }
 .insight-p.highlight strong { color: var(--primary); }
 
-/* ── PRINT ── */
+/* Tablas generadas por IA */
+.insight-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 0.9rem; background: var(--surface); border-radius: var(--rs); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.insight-table th { background: var(--surface2); padding: 14px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--border); color: var(--if-navy); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; }
+.insight-table td { padding: 14px; border-bottom: 1px solid var(--surface2); color: var(--text); vertical-align: top; }
+.insight-table tr:hover td { background: var(--surface2); }
+.insight-table ul { margin-left: 20px; margin-top: 10px; }
+.insight-table li { margin-bottom: 6px; }
+
+
+/* ── SOLUCIÓN PDF: IMPRESIÓN NATIVA EN TABLOIDE HORIZONTAL (11x17") ── */
+@page {
+  size: tabloid landscape; /* Fuerza el papel tabloide apaisado para aprovechar el ancho */
+  margin: 15mm;
+}
+
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; animation: none !important; }
-  body { background: #fff; color: #000; overflow: visible !important; }
-  .header-right, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept, .insight-container { display: none !important; }
-  .main { padding: 0 !important; }
-  .kpi-grid, .rank-list, .comment-list, .table-card, #radarLegend, #lineLegend { max-height: none !important; overflow: visible !important; height: auto !important; }
-  .rank-item { min-width: 0 !important; overflow: visible !important; white-space: normal !important; }
-  .rank-q-wrap, .rank-badge { white-space: normal !important; overflow: visible !important; }
-  .rb-name-wrap { white-space: normal !important; overflow: visible !important; }
-  .chart-card, .kpi-card, tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; box-shadow: none !important; border-color: #eee !important;}
-  .charts-row { display: block !important; }
-  .chart-card { margin-bottom: 24px !important; }
+  
+  /* Resetear el body para usar el 100% del tamaño físico de la hoja Tabloide */
+  body { background: #fff !important; color: #000; overflow: visible !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  .header, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept, .insight-container, .dept-tabs, .comment-categories { display: none !important; }
+  
+  /* El wrapper principal ya no estará limitado a 1000px */
+  .main { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  
+  /* Forzar las 2 columnas nativas ocupando todo el ancho */
+  .cols-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; width: 100% !important; gap: 24px !important;}
+  
+  /* Quitar sombras pero retener bordes estructurales */
+  .chart-card, .table-card, .participation-card { 
+    width: 100% !important; 
+    border: 1px solid var(--border) !important; 
+    box-shadow: none !important; 
+    background: transparent !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+    break-inside: avoid !important; 
+    page-break-inside: avoid !important; 
+  }
+  
+  /* Ajuste de medidores NPS para impresión a lo ancho */
+  .nps-grid { display: flex !important; flex-wrap: wrap !important; gap: 16px !important; justify-content: center !important;}
+  .nps-gauge-card { width: calc(33.333% - 16px) !important; border: 1px solid var(--border) !important; padding: 16px !important; margin: 0 !important; flex: none !important; break-inside: avoid !important; box-shadow: none !important; }
+  
+  /* Centrado y crecimiento de las gráficas Chart.js */
+  .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: auto !important; min-height: 350px !important;}
+  canvas { margin: 0 auto !important; max-width: 100% !important; height: auto !important; }
+  
+  /* Quitar scrolls de contenedores y asegurar visibilidad */
+  .kpi-grid, .rank-list, .comment-list, .table-card { max-height: none !important; overflow: visible !important; height: auto !important; }
+  #commentsChartContainer { display: block !important; }
+  #commentList { display: flex !important; flex-direction: column !important; }
+  #radarLegend, #lineLegend { display: flex !important; max-height: none !important; overflow: visible !important; }
+  
+  .rank-item { min-width: 0 !important; overflow: visible !important; height: auto !important;}
+  .rank-q-wrap, .rank-q-inner { white-space: normal !important; overflow: visible !important;}
+  .rank-badge, .rb-name-wrap { white-space: normal !important; overflow: visible !important; }
+  tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; }
   .dept-row { display: table-row !important; } 
   .toggle-arrow { display: none !important; }
+  
+  /* SOLUCIÓN: Desactivar "sticky" en print para evitar glitches visuales en el PDF */
+  #detailTable td:first-child, #detailTable th:first-child { position: static !important; background: transparent !important; }
+  #detailTable { width: 100% !important; border-collapse: collapse !important; }
+  #detailTable td, #detailTable th { border: 1px solid var(--border) !important; }
+  
+  /* Limpiar comentarios para diseño PDF */
+  .comment-item {
+    border: none !important; box-shadow: none !important; background: transparent !important;
+    padding: 6px 0 6px 14px !important; border-left: 3px solid var(--al, var(--primary)) !important;
+    margin-bottom: 12px !important; font-size: .85rem !important;
+  }
 }
 
 /* ── RESPONSIVE ── */
@@ -462,6 +507,10 @@ tbody td:first-child { text-align: left; }
   <div class="header-right">
     <span class="badge">Admin</span>
     
+    <button class="btn btn-import" id="btnNPS">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+      Capturar NPS
+    </button>
     <button class="btn btn-import" id="btnImport">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       Importar Datos
@@ -477,6 +526,19 @@ tbody td:first-child { text-align: left; }
     </button>
   </div>
 </header>
+
+<div class="modal-overlay" id="npsModal">
+  <div class="modal-box" style="width: 700px; max-height: 85vh; display: flex; flex-direction: column;">
+    <h2>Captura de Net Promoter Score (NPS)</h2>
+    <p>Ingresa la cantidad de personas que votaron en cada rubro. El NPS se calculará automáticamente. Déjalo en blanco si el área no fue evaluada.</p>
+    <div id="npsInputList" style="flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 10px;">
+        </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btnCloseNPS">Cancelar</button>
+      <button class="btn-reader" id="btnSaveNPS">Guardar y Calcular NPS</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="importModal">
   <div class="modal-box">
@@ -515,7 +577,7 @@ tbody td:first-child { text-align: left; }
 </div>
 
 <div class="modal-overlay" id="insightModal">
-  <div class="modal-box" style="width: 800px;">
+  <div class="modal-box" style="width: 900px;">
     <h2 id="insightTitle" style="display:flex; align-items:center; gap:10px;">
       ✨ Diagnóstico Estratégico Integral
     </h2>
@@ -555,6 +617,16 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <table id="participationTable"><thead></thead><tbody></tbody></table>
+  </div>
+
+  <div class="chart-card" id="npsCard" style="display:none; margin-bottom:24px;">
+    <div class="chart-hdr" style="margin-bottom: 24px;">
+      <div>
+        <div class="chart-title">Net Promoter Score (NPS)</div>
+        <div class="chart-sub">¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)</div>
+      </div>
+    </div>
+    <div id="npsGrid" class="nps-grid"></div>
   </div>
 
   <div class="filter-bar" id="filterBarDir" style="margin-bottom:12px;"></div>
@@ -620,7 +692,7 @@ tbody td:first-child { text-align: left; }
     <div class="chart-hdr">
       <div>
         <div class="chart-title">Análisis de Comentarios</div>
-        <div class="chart-sub">Clasificados automáticamente · Selecciona un departamento o vista general</div>
+        <div class="chart-sub">Clasificados automáticamente · Gráfica y Detalles</div>
       </div>
     </div>
     <div class="dept-tabs" id="deptTabs"></div>
@@ -649,13 +721,13 @@ let SCORES = [];
 let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
+let NPS_DATA = {}; 
 
 let activeDirs = new Set(['Todas']);
 let activeDepts = new Set(['Todos']);
 let barChart, radarChart, lineChart, commentsChart;
 window.selectedLineIdx = null;
 
-// MEMORIA CACHÉ PARA EL ANÁLISIS
 window.cachedAnalysisHTML = "";
 window.cachedFilterKey = "";
 
@@ -682,19 +754,21 @@ function showToast(msg, type='') {
 
 function injectDirectionAverages() {
   if (DEPTS.length === 0) return; 
+  
+  DEPTS = DEPTS.filter(d => !d.startsWith('PROM. '));
+
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
   
   dirs.forEach(dir => {
     const promName = "PROM. " + dir;
-    if (!DEPTS.includes(promName)) {
-      DEPTS.push(promName);
-      DEPT_TO_DIR[promName] = dir;
-      COMMENTS[promName] = []; 
-    }
+    DEPTS.push(promName);
+    DEPT_TO_DIR[promName] = dir;
+    COMMENTS[promName] = []; 
+    
     const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
     const diProm = DEPTS.indexOf(promName);
+    
     SCORES.forEach((qScores) => {
-       // EXCLUSION DE N/A: Solo filtramos notas validas
        const validScores = dirDepts.map(d => qScores[DEPTS.indexOf(d)]).filter(v => v !== null && v !== undefined && !isNaN(v));
        const avg = validScores.length ? validScores.reduce((a,b)=>a+b,0)/validScores.length : null;
        qScores[diProm] = avg !== null ? +(avg.toFixed(2)) : null;
@@ -740,17 +814,90 @@ function initDashboard(){
 function wireButtons(){
   document.getElementById('btnImport').onclick = () => document.getElementById('importModal').classList.add('open');
   document.getElementById('btnCloseImport').onclick = () => document.getElementById('importModal').classList.remove('open');
-  document.getElementById('btnExportPDF').onclick = () => window.print();
+  document.getElementById('btnExportPDF').onclick = () => {
+     window.print();
+  };
   document.getElementById('btnShare').onclick = () => document.getElementById('shareModal').classList.add('open');
   document.getElementById('btnCloseShare').onclick = () => document.getElementById('shareModal').classList.remove('open');
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
-  
+
+  // Lógica Modal NPS
+  document.getElementById('btnNPS').onclick = openNPSModal;
+  document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
+  document.getElementById('btnSaveNPS').onclick = saveNPSModal;
+
   const dropzone = document.getElementById('dropzone');
   dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
   dropzone.ondragleave = () => dropzone.classList.remove('over');
   dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
   document.getElementById('fileInput').onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
+}
+
+// ── LÓGICA NPS MODAL ──
+function openNPSModal() {
+  const list = document.getElementById('npsInputList');
+  list.innerHTML = '';
+  const realDepts = DEPTS.filter(d => !d.startsWith('PROM. '));
+  
+  if (realDepts.length === 0) {
+     list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>';
+  } else {
+     realDepts.forEach(d => {
+       // Limpieza en caso de datos viejos
+       let data = NPS_DATA[d] || {det: '', pas: '', pro: ''};
+       if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
+
+       list.innerHTML += `
+         <div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;">
+           <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label>
+           <div style="display:flex; gap:16px; width:100%; margin-top:10px;">
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:var(--danger); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Detractores (0-6)</div>
+               <input type="number" min="0" data-type="det" data-dept="${d}" value="${data.det}" style="width:100%; border-color:var(--danger); background:var(--danger-bg); color:var(--danger);">
+             </div>
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:#D97706; font-weight:700; margin-bottom:6px; text-transform:uppercase;">Pasivos (7-8)</div>
+               <input type="number" min="0" data-type="pas" data-dept="${d}" value="${data.pas}" style="width:100%; border-color:#F59E0B; background:var(--warning-bg); color:#D97706;">
+             </div>
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:var(--success); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Promotores (9-10)</div>
+               <input type="number" min="0" data-type="pro" data-dept="${d}" value="${data.pro}" style="width:100%; border-color:var(--success); background:var(--success-bg); color:var(--success);">
+             </div>
+           </div>
+         </div>
+       `;
+     });
+  }
+  document.getElementById('npsModal').classList.add('open');
+}
+
+function saveNPSModal() {
+  const rows = document.querySelectorAll('#npsInputList .nps-row');
+  rows.forEach(row => {
+    const detInp = row.querySelector('input[data-type="det"]');
+    const pasInp = row.querySelector('input[data-type="pas"]');
+    const proInp = row.querySelector('input[data-type="pro"]');
+    const d = detInp.getAttribute('data-dept');
+    
+    const det = detInp.value.trim();
+    const pas = pasInp.value.trim();
+    const pro = proInp.value.trim();
+
+    if (det === '' && pas === '' && pro === '') {
+       delete NPS_DATA[d];
+    } else {
+       NPS_DATA[d] = {
+         det: parseInt(det || 0, 10),
+         pas: parseInt(pas || 0, 10),
+         pro: parseInt(pro || 0, 10)
+       };
+    }
+  });
+
+  document.getElementById('npsModal').classList.remove('open');
+  updateAllViews();
+  showToast('✅ NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
@@ -839,6 +986,7 @@ function updateAllViews() {
   });
 
   renderParticipation(orderedDepts);
+  renderNPS(orderedDepts);
   renderKPIs(orderedDepts);
   renderBarChart(orderedDepts);
   renderRadarChart(orderedDepts, activeQIndices);
@@ -846,6 +994,129 @@ function updateAllViews() {
   renderRankingList(orderedDepts, activeQIndices);
   renderDetailTable(orderedDepts, activeQIndices);
   renderDeptTabs(orderedDepts);
+
+  if(activeDepts.size === 1 && !activeDepts.has('Todos')) {
+      const single = Array.from(activeDepts)[0];
+      if(!single.startsWith('PROM.')) {
+          setTimeout(() => {
+              const tabs = document.querySelectorAll('.dept-tab');
+              for(let t of tabs) {
+                  if(t.textContent.includes(single)) { t.click(); break; }
+              }
+          }, 100);
+      }
+  }
+}
+
+// ── GENERADOR DE MEDIDORES NPS (SVG PURO) ──
+function renderNPS(orderedDepts) {
+  const card = document.getElementById('npsCard');
+  const grid = document.getElementById('npsGrid');
+  grid.innerHTML = '';
+  
+  let hasData = false;
+  
+  orderedDepts.forEach(d => {
+    let val = null;
+    let breakdown = null;
+
+    // Calcular Valor y Desglose
+    if(d.startsWith('PROM. ')) {
+       const dir = d.replace('PROM. ', '');
+       const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
+       const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === 'object');
+       
+       if(validSubDepts.length > 0) {
+         let tDet = 0, tPas = 0, tPro = 0;
+         validSubDepts.forEach(sub => {
+           tDet += NPS_DATA[sub].det;
+           tPas += NPS_DATA[sub].pas;
+           tPro += NPS_DATA[sub].pro;
+         });
+         const total = tDet + tPas + tPro;
+         if (total > 0) {
+            val = Math.round(((tPro - tDet) / total) * 100);
+            breakdown = { det: tDet, pas: tPas, pro: tPro, total };
+         }
+       }
+    } else {
+       if(NPS_DATA[d] !== undefined && typeof NPS_DATA[d] === 'object') {
+         const data = NPS_DATA[d];
+         const total = data.det + data.pas + data.pro;
+         if (total > 0) {
+           val = Math.round(((data.pro - data.det) / total) * 100);
+           breakdown = { det: data.det, pas: data.pas, pro: data.pro, total };
+         }
+       }
+    }
+    
+    if(val !== null && breakdown !== null) {
+       hasData = true;
+
+       // Lógica Matemática del Medidor SVG
+       const clampedVal = Math.max(-100, Math.min(100, val));
+       const p = (clampedVal + 100) / 200; // Porcentaje de 0 a 1
+       
+       // Longitud del medio círculo (radio = 80) = Pi * 80 ≈ 251.327
+       const arcLength = Math.PI * 80; 
+       const fillLength = p * arcLength;
+       const rotation = (p * 180) - 90;
+
+       // Color semántico
+       let color = '#EF4444'; // Rojo (Detractor)
+       if (val >= 0) color = '#F59E0B'; // Amarillo (Pasivo)
+       if (val >= 50) color = '#10B981'; // Verde (Promotor)
+
+       const html = `
+       <div class="nps-gauge-card">
+           <div class="nps-gauge-title">${d}</div>
+           
+           <div class="nps-gauge-wrapper">
+               <svg viewBox="0 0 200 120" style="width:100%; height:auto; overflow:visible;">
+                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#EDF1F5" stroke-width="16" stroke-linecap="round"/>
+                   
+                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" 
+                         stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/>
+                         
+                   <g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);">
+                      <path d="M 96 45 L 104 45 L 100 12 Z" fill="#152130" />
+                      <circle cx="100" cy="45" r="4" fill="#152130"/>
+                   </g>
+               </svg>
+               
+               <div class="nps-value-container">
+                   <div class="nps-val">${val}</div>
+                   <div class="nps-lbl">NPS</div>
+               </div>
+           </div>
+
+           <div style="display:flex; gap:10px; width:100%; margin-top:20px; background:var(--surface2); border-radius:10px; padding:12px; justify-content:space-around;">
+              <div style="text-align:center;">
+                  <div style="font-size:1.2rem; font-weight:900; color:var(--danger); line-height:1;">${breakdown.det}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Detract</div>
+              </div>
+              <div style="text-align:center; border-left:1.5px solid var(--border); border-right:1.5px solid var(--border); padding:0 14px;">
+                  <div style="font-size:1.2rem; font-weight:900; color:#D97706; line-height:1;">${breakdown.pas}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Pasivos</div>
+              </div>
+              <div style="text-align:center;">
+                  <div style="font-size:1.2rem; font-weight:900; color:var(--success); line-height:1;">${breakdown.pro}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Promot</div>
+              </div>
+           </div>
+           
+           <div class="nps-sub" style="margin-top:10px;">${breakdown.total} respuestas en total</div>
+       </div>
+       `;
+       grid.innerHTML += html;
+    }
+  });
+  
+  if(!hasData) {
+    card.style.display = 'none';
+  } else {
+    card.style.display = 'block';
+  }
 }
 
 function renderKPIs(orderedDepts){
@@ -889,7 +1160,6 @@ function classifyComment(text){
   if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return 'Ignorar';
 
   const raw = text.toLowerCase();
-
   if(raw.match(/sistema|software|portal|plataforma|red|conexi.n|aplicaci.n|computadora|laptop|mouse|teclado|monitor|pantalla|impresora|internet|falla|error de sistema|tecnolog/)) return 'Sistemas, Equipo y Tecnología';
   if(raw.match(/tiempo|rapidez|rápida|rápido|urgente|tard|agilizar|demora|retraso|lento|espera|agilidad/)) return 'Tiempos de Respuesta';
   if(raw.match(/comunicaci|avisar|claro|transparencia|informaci|notificar|respuesta|contestar|seguimiento|aviso|correo|llamada|mensaje|junta|feedback/)) return 'Comunicación y Seguimiento';
@@ -923,23 +1193,37 @@ function renderDeptTabs(orderedDepts){
   c.innerHTML = '';
   
   const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
-  if(realDepts.length === 0) return;
+  if(realDepts.length === 0) {
+      document.getElementById('commentsChartContainer').style.display = 'none';
+      document.getElementById('commentList').innerHTML = '<div class="no-comments">No hay datos</div>';
+      return;
+  }
 
   const groups = getDeptsGroupedByDir(realDepts);
   
-  const btnCorp = document.createElement('button');
-  btnCorp.className = 'dept-tab btn-consolidado truncated';
-  btnCorp.innerHTML = "<span class='dot'></span>🏢 CONSOLIDADO CORPORATIVO";
-  btnCorp.onclick = () => {
+  // 1. BOTÓN MAESTRO: Mostrar TODOS los seleccionados (Gráfica y Lista combinados)
+  const btnAllSelected = document.createElement('button');
+  btnAllSelected.className = 'dept-tab btn-consolidado truncated';
+  btnAllSelected.style.background = 'var(--if-orange)'; 
+  btnAllSelected.style.borderColor = 'var(--if-orange-hover)'; 
+  btnAllSelected.innerHTML = "<span class='dot' style='background:#fff!important'></span>📑 VER TODO (Gráfica y Comentarios)";
+  btnAllSelected.onclick = () => {
     document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
-    btnCorp.classList.add('active');
-    document.getElementById('catChips').innerHTML = '';
-    document.getElementById('commentList').style.display = 'none';
+    btnAllSelected.classList.add('active');
+    
+    // Mostramos AMBOS contenedores
     document.getElementById('commentsChartContainer').style.display = 'block';
-    renderCommentsChart('Toda la Empresa', realDepts);
+    document.getElementById('commentList').style.display = 'flex';
+    
+    // Renderizamos gráfica con todos los datos seleccionados
+    renderCommentsChart('Consolidado', realDepts);
+    // Renderizamos chips y lista con todos los datos seleccionados
+    renderMultiCatChips(realDepts);
+    renderMultiDeptComments(realDepts, null);
   };
-  c.appendChild(btnCorp);
+  c.appendChild(btnAllSelected);
 
+  // 2. Generar las pestañas individuales por Dirección y Departamento
   for (const [dir, dList] of Object.entries(groups)) {
     const deptsWithComments = dList.filter(d => (COMMENTS[d]||[]).some(cm => classifyComment(cm) !== 'Ignorar'));
     if(deptsWithComments.length === 0) continue;
@@ -954,10 +1238,15 @@ function renderDeptTabs(orderedDepts){
     btnGen.onclick = () => {
       document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
       btnGen.classList.add('active');
-      document.getElementById('catChips').innerHTML = '';
-      document.getElementById('commentList').style.display = 'none';
+      
+      // Mostramos AMBOS contenedores
       document.getElementById('commentsChartContainer').style.display = 'block';
+      document.getElementById('commentList').style.display = 'flex';
+      
+      // Renderizamos todo filtrado solo a la Dirección
       renderCommentsChart(dir, deptsWithComments);
+      renderMultiCatChips(deptsWithComments);
+      renderMultiDeptComments(deptsWithComments, null);
     };
     groupDiv.appendChild(btnGen);
 
@@ -970,8 +1259,13 @@ function renderDeptTabs(orderedDepts){
       btn.onclick = () => {
         document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('commentsChartContainer').style.display = 'none';
+        
+        // Mostramos AMBOS contenedores
+        document.getElementById('commentsChartContainer').style.display = 'block';
         document.getElementById('commentList').style.display = 'flex';
+        
+        // Renderizamos todo filtrado a un solo Departamento
+        renderCommentsChart(d, [d]);
         renderCatChips(d);
         renderComments(d, null);
       };
@@ -980,8 +1274,8 @@ function renderDeptTabs(orderedDepts){
     c.appendChild(groupDiv);
   }
   
-  document.getElementById('commentsChartContainer').style.display = 'none';
-  document.getElementById('commentList').style.display = 'flex';
+  // AL FINALIZAR LA CREACIÓN, auto-clickeamos el botón maestro para iniciar la vista correctamente
+  setTimeout(() => btnAllSelected.click(), 10);
 }
 
 function renderCommentsChart(label, deptsList) {
@@ -1030,12 +1324,127 @@ function renderCatChips(dept){
   Object.keys(cats).sort((a,b)=>cats[b].length - cats[a].length).forEach(cat => container.appendChild(makeChip(cat, cats[cat].length, () => renderComments(dept, cat))));
 }
 
+// ── RENDER COMMENTS CON AGRUPACIÓN Y CONTEO ──
 function renderComments(dept, cat){
   const list = document.getElementById('commentList');
   const valid = (COMMENTS[dept]||[]).filter(c => classifyComment(c) !== 'Ignorar');
-  const filtered = cat ? valid.filter(c => classifyComment(c) === cat) : valid;
-  if(!filtered.length){ list.innerHTML = '<div class="no-comments">Sin comentarios relevantes o están ocultos por el filtro automático de limpieza.</div>'; return; }
-  list.innerHTML = filtered.map(c => "<div class='comment-item' style='--al:" + deptColor(dept) + "'>" + c + "</div>").join('');
+  
+  if(!valid.length){ 
+    list.innerHTML = '<div class="no-comments">Sin comentarios relevantes o están ocultos por el filtro automático de limpieza.</div>'; 
+    return; 
+  }
+  
+  let html = '';
+  
+  if (cat) {
+    const filtered = valid.filter(c => classifyComment(c) === cat);
+    if(!filtered.length){ 
+      list.innerHTML = '<div class="no-comments">Sin comentarios en esta categoría.</div>'; 
+      return; 
+    }
+    html = filtered.map(c => "<div class='comment-item' style='--al:" + deptColor(dept) + "'>" + c + "</div>").join('');
+  } else {
+    const grouped = {};
+    valid.forEach(c => {
+      const cName = classifyComment(c);
+      if(!grouped[cName]) grouped[cName] = [];
+      grouped[cName].push(c);
+    });
+    
+    const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+    
+    sortedCats.forEach(cName => {
+      html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+      html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(dept) + "'>" + c + "</div>").join('');
+    });
+  }
+  
+  list.innerHTML = html;
+}
+
+// NUEVA FUNCIÓN: Genera los chips de filtro (botones) combinando los comentarios de múltiples departamentos
+function renderMultiCatChips(deptsList) {
+  let allValidComments = [];
+  deptsList.forEach(dept => {
+    const valid = (COMMENTS[dept]||[]).filter(c => classifyComment(c) !== 'Ignorar');
+    allValidComments = allValidComments.concat(valid);
+  });
+
+  const cats = {};
+  allValidComments.forEach(c => { 
+    const cat = classifyComment(c); 
+    if(!cats[cat]) cats[cat] = [];
+    cats[cat].push(c); 
+  });
+  
+  const container = document.getElementById('catChips');
+  container.innerHTML = '';
+  
+  const makeChip = (label, count, onClick) => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-chip truncated';
+    btn.title = label;
+    btn.innerHTML = "<span class='chip-text'>" + label + "</span><span class='cnt'>" + count + "</span>";
+    btn.onclick = () => { document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); onClick(); };
+    return btn;
+  };
+  
+  container.appendChild(makeChip('Todos', allValidComments.length, () => renderMultiDeptComments(deptsList, null))).classList.add('active');
+  Object.keys(cats).sort((a,b)=>cats[b].length - cats[a].length).forEach(cat => container.appendChild(makeChip(cat, cats[cat].length, () => renderMultiDeptComments(deptsList, cat))));
+}
+
+// NUEVA FUNCIÓN: Renderiza la lista iterando por Departamento > Clasificación > Comentario
+function renderMultiDeptComments(deptsList, filterCat) {
+  const list = document.getElementById('commentList');
+  let html = '';
+  let totalCommentsShown = 0;
+
+  deptsList.forEach(dept => {
+    const valid = (COMMENTS[dept]||[]).filter(c => classifyComment(c) !== 'Ignorar');
+    if (!valid.length) return; // Si este departamento no tiene comentarios válidos, lo saltamos
+
+    let deptHtml = '';
+    const dColor = deptColor(dept);
+    
+    if (filterCat) {
+      // Si el usuario hizo clic en un chip específico (ej. "Tiempos de Respuesta")
+      const filtered = valid.filter(c => classifyComment(c) === filterCat);
+      if (filtered.length) {
+        deptHtml += filtered.map(c => "<div class='comment-item' style='--al:" + dColor + "'>" + c + "</div>").join('');
+        totalCommentsShown += filtered.length;
+      }
+    } else {
+      // Si no hay filtro, agrupamos por clasificación dentro del departamento
+      const grouped = {};
+      valid.forEach(c => {
+        const cName = classifyComment(c);
+        if(!grouped[cName]) grouped[cName] = [];
+        grouped[cName].push(c);
+      });
+      
+      const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+      
+      sortedCats.forEach(cName => {
+        deptHtml += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+        deptHtml += grouped[cName].map(c => "<div class='comment-item' style='--al:" + dColor + "'>" + c + "</div>").join('');
+        totalCommentsShown += grouped[cName].length;
+      });
+    }
+
+    // Si el departamento tuvo comentarios para mostrar, le agregamos su Título principal
+    if (deptHtml !== '') {
+      html += "<div style='margin-bottom: 32px; background: var(--surface2); padding: 16px; border-radius: var(--rs); border: 1px solid var(--border);'>";
+      html += "<div style='font-weight: 800; font-size: 1.15rem; color: " + dColor + "; border-bottom: 2px solid " + dColor + "40; padding-bottom: 6px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;'><span style='width:12px; height:12px; border-radius:50%; background:" + dColor + "'></span>" + dept + "</div>";
+      html += deptHtml;
+      html += "</div>";
+    }
+  });
+
+  if (totalCommentsShown === 0) {
+    list.innerHTML = '<div class="no-comments">No hay comentarios en la clasificación seleccionada para estos departamentos.</div>';
+  } else {
+    list.innerHTML = html;
+  }
 }
 
 function renderBarChart(orderedDepts){
@@ -1329,7 +1738,6 @@ function getDeptsGroupedByDir(list) {
   return g;
 }
 
-
 // ── ANÁLISIS EJECUTIVO CON IA (CLAUDE) ──
 window.openInsights = async function() {
   var modal = document.getElementById('insightModal');
@@ -1353,14 +1761,14 @@ window.openInsights = async function() {
   content.style.display = 'none';
   loadingContainer.style.display = 'block';
 
-  // Textos de carga animados mientras espera la IA
   var loadingTexts = [
     "Enviando datos a la IA...",
     "Analizando puntajes por departamento...",
     "Procesando comentarios cualitativos...",
-    "Identificando brechas y fortalezas...",
-    "Generando diagnóstico estratégico...",
-    "Redactando plan de acción ejecutivo..."
+    "Cruzando calificaciones de Servicio con NPS...",
+    "Identificando brechas y fortalezas ocultas...",
+    "Generando diagnóstico estratégico nivel consultor...",
+    "Redactando plan de acción y métricas clave..."
   ];
   var ltIdx = 0;
   var textEl = document.getElementById('loadingText');
@@ -1373,11 +1781,10 @@ window.openInsights = async function() {
   var ltInterval = setInterval(function() {
     ltIdx = (ltIdx + 1) % loadingTexts.length;
     if(textEl) textEl.textContent = loadingTexts[ltIdx];
-    var fakePct = Math.min(90, 5 + (ltIdx / loadingTexts.length) * 85);
+    var fakePct = Math.min(95, 5 + (ltIdx / loadingTexts.length) * 90);
     if(progressEl) progressEl.style.width = fakePct + "%";
-  }, 2500);
+  }, 2000);
 
-  // Recopilar datos filtrados
   var allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
   var filteredDepts = DEPTS.filter(function(d){ return allowedDirs.includes(DEPT_TO_DIR[d]); });
   var realDepts = activeDepts.has('Todos')
@@ -1393,47 +1800,98 @@ window.openInsights = async function() {
     return;
   }
 
-  // Construir resumen optimizado (mínimo de tokens, máximo de valor)
   var globalAvgAll = 0, countAll = 0;
   realDepts.forEach(function(d){ var a = AVERAGES[DEPTS.indexOf(d)]; if(a>0){globalAvgAll+=a;countAll++;} });
   var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : 'N/A';
 
-  // Top 3 mejores y peores departamentos
   var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||'General'}; }).sort(function(a,b){return b.avg-a.avg;});
-  var top3 = deptAvgs.slice(0,3).map(function(x){ return x.d+"("+x.avg.toFixed(1)+")"; }).join(", ");
-  var bot3 = deptAvgs.slice(-3).map(function(x){ return x.d+"("+x.avg.toFixed(1)+")"; }).join(", ");
+  var deptRanking = deptAvgs.map(function(x,i){ return "#"+(i+1)+" "+x.d+" ["+x.dir+"]: "+x.avg.toFixed(2)+"/10"; }).join("\n");
 
-  // Mejor y peor pregunta
-  var bestQ='', worstQ='', bestQv=-1, worstQv=11;
+  var qLines = QUESTIONS.map(function(q,qi){
+    var vals = realDepts.map(function(d){
+      var v = SCORES[qi][DEPTS.indexOf(d)];
+      return (v!=null&&!isNaN(v)) ? {d:d,v:v} : null;
+    }).filter(Boolean);
+    if(!vals.length) return null;
+    vals.sort(function(a,b){return b.v-a.v;});
+    var avg = vals.reduce(function(s,x){return s+x.v;},0)/vals.length;
+    var sd = Math.sqrt(vals.reduce(function(s,x){return s+Math.pow(x.v-avg,2);},0)/vals.length);
+    var best = vals[0], worst = vals[vals.length-1];
+    var flag = sd>=1.5 ? " ⚠️POLARIZADA" : (avg<8 ? " 🚨CRÍTICA" : (avg>=9 ? " ✅FUERTE" : ""));
+    return "• \""+q+"\": prom="+avg.toFixed(1)+flag+"\n  Mejor: "+best.d+"("+best.v.toFixed(1)+") | Peor: "+worst.d+"("+worst.v.toFixed(1)+")";
+  }).filter(Boolean).join("\n");
+
+  var tS=0,tA=0;
+  realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
+  var partGlobal = tS>0 ? (tA+"/"+tS+", "+( tA/tS*100).toFixed(1)+"% de respuesta") : "Sin datos";
+  var partLines = realDepts.map(function(d){
+    var p=PARTICIPATION[d]; if(!p||!p.sent) return null;
+    var pct=(p.ans/p.sent*100).toFixed(0);
+    return d+"("+pct+"%)";
+  }).filter(Boolean).join(", ");
+
+  var fallas=[], polarizadas=[];
   QUESTIONS.forEach(function(q,qi){
-    var vals = realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
-    if(vals.length){var m=vals.reduce(function(a,b){return a+b;},0)/vals.length; if(m>bestQv){bestQv=m;bestQ=q;} if(m<worstQv){worstQv=m;worstQ=q;}}
+    var vals=realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
+    if(!vals.length) return;
+    var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length;
+    var sd=Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-avg,2);},0)/vals.length);
+    if(vals.filter(function(v){return v<8;}).length>=vals.length*0.4) fallas.push('"'+q+'"(prom:'+avg.toFixed(1)+')');
+    if(sd>=1.5) polarizadas.push('"'+q+'"(SD:'+sd.toFixed(1)+')');
   });
 
-  // Participación global
-  var tS=0, tA=0;
-  realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
-  var partStr = tS>0 ? (tA+"/"+tS+" ("+(tA/tS*100).toFixed(0)+"%)") : "Sin datos";
+  var allComments=[];
+  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
+  allComments=allComments.slice(0,30); // Incrementado para dar más contexto a la IA
 
-  // Comentarios: máximo 5 en total, los más cortos
-  var allComments = [];
-  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c && c.length>5 && c.length<120) allComments.push(c); }); });
-  allComments = allComments.slice(0,5);
+  // EXTRAER NPS PARA EL PROMPT
+  var npsLines = realDepts.map(function(d){
+    if(NPS_DATA[d] && typeof NPS_DATA[d] === 'object') {
+      var data = NPS_DATA[d];
+      var total = data.det + data.pas + data.pro;
+      if (total > 0) {
+        var val = Math.round(((data.pro - data.det) / total) * 100);
+        return "• " + d + ": NPS " + val + " (Promotores: " + data.pro + ", Pasivos: " + data.pas + ", Detractores: " + data.det + ")";
+      }
+    }
+    return null;
+  }).filter(Boolean).join("\n");
 
-  var prompt = "Analiza esta encuesta interna y genera análisis ejecutivo en HTML (español).\n" +
-    "DATOS: Promedio global: " + globalAvg + "/10 | Participación: " + partStr + "\n" +
-    "Mejores: " + top3 + " | Peores: " + bot3 + "\n" +
-    "Mejor pregunta: \"" + bestQ + "\" (" + bestQv.toFixed(1) + ") | Peor: \"" + worstQ + "\" (" + worstQv.toFixed(1) + ")\n" +
-    (allComments.length ? "Comentarios: " + allComments.join(" / ") + "\n" : "") +
-    "HTML REQUERIDO: 4 secciones con <div class='insight-section-title'> y <div class='insight-p'>. Última sección usa <div class='insight-p highlight'>. Sin markdown, solo HTML. Menciona nombres y cifras reales. Tono ejecutivo directo.";
+  var prompt = 
+"Eres un Consultor Senior Experto en Desarrollo Organizacional, Clima Laboral y Calidad de Servicio Interno. Tu tarea es analizar los resultados de una evaluación de servicio interno de una empresa y generar un reporte de nivel directivo EXTREMADAMENTE DETALLADO, PROFUNDO Y EXHAUSTIVO. " +
+"Quiero que entregues todo el valor posible. Tu respuesta debe ser de una longitud entre 3000 y 8000 tokens, desglosando cada aspecto, correlacionando métricas y justificando cada hallazgo.\n\n" +
+"CONTEXTO METODOLÓGICO:\n" +
+"- Departamentos califican el servicio que RECIBEN de otras áreas (escala 1 a 10).\n" +
+"- NPS Interno (Net Promoter Score): Va de -100 a 100. Mide lealtad y satisfacción general. Promotores (9-10), Pasivos (7-8), Detractores (0-6).\n" +
+"- Busca correlaciones: ¿Un área tiene buena calificación de servicio pero NPS negativo? Eso indica que cumplen el proceso pero el trato es malo, o viceversa.\n\n" +
+"DATOS DE LA EVALUACIÓN:\n\n" +
+"1. PARTICIPACIÓN:\n" + partGlobal + "\n" + (partLines ? partLines + "\n" : "") + "\n" +
+"2. NPS (NET PROMOTER SCORE) POR DEPARTAMENTO:\n" + (npsLines ? npsLines : "Sin datos de NPS capturados en esta vista.") + "\n\n" +
+"3. RANKING DE SERVICIO (Promedio General: " + globalAvg + "/10):\n" + deptRanking + "\n\n" +
+"4. CALIFICACIÓN POR PREGUNTA/ASPECTO:\n" + qLines + "\n\n" +
+(fallas.length ? "5. FALLAS SISTÉMICAS (Múltiples áreas fallan en esto):\n" + fallas.join("\n") + "\n\n" : "") +
+(polarizadas.length ? "6. SERVICIO INCONSISTENTE (Polarización):\n" + polarizadas.join("\n") + "\n\n" : "") +
+(allComments.length ? "7. COMENTARIOS CUALITATIVOS (Voz del cliente interno):\n" + allComments.map(function(x,i){return (i+1)+'. ['+x.d+']: "'+x.c+'"';}).join("\n") + "\n\n" : "") +
+"ESTRUCTURA EXIGIDA DEL REPORTE (Usa estrictamente etiquetas HTML: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <table class='insight-table'>, <ul>, <li>, <strong>, <b>):\n\n" +
+"1. 📊 RESUMEN EJECUTIVO: Análisis de participación, el estado general de la organización y el diagnóstico principal.\n" +
+"2. 🎯 ANÁLISIS DE NPS Y CORRELACIÓN: Evalúa el NPS. ¿Quiénes generan lealtad? ¿Quiénes generan fricción? Cruza el NPS con el puntaje de servicio. Crea una tabla HTML comparando áreas.\n" +
+"3. 🏆 FORTALEZAS Y CASOS DE ÉXITO: Qué departamentos son el pilar de la empresa actualmente y qué mejores prácticas demuestran según los datos y comentarios.\n" +
+"4. 🚨 FOCOS ROJOS Y RIESGOS OPERATIVOS: Inmersión profunda en las áreas con peor NPS o puntaje. Conecta los comentarios con los números para explicar EXACTAMENTE qué está fallando y cómo afecta a la empresa.\n" +
+"5. ⚙️ DIAGNÓSTICO DE PROCESOS (FALLAS SISTÉMICAS): Análisis de las preguntas peor puntuadas a nivel global. ¿Qué procesos transversales están rotos?\n" +
+"6. 💬 ANÁLISIS DE LA VOZ DEL CLIENTE: Patrones encontrados en los comentarios cualitativos. Cita textualmente ejemplos clave de los datos provistos.\n" +
+"7. 🚀 PLAN DE ACCIÓN ESTRATÉGICO (Usa <div class='insight-p highlight'>): MÍNIMO 5 iniciativas robustas y muy específicas. Detalla: Área responsable, Acción inmediata, KPI de medición y Resultados esperados.\n\n" +
+"REGLAS FINALES:\n" +
+"- Escribe de forma profesional, directa y consultiva.\n" +
+"- Extiéndete en tus explicaciones. Desglosa los 'porqués'. Oblígate a alcanzar una gran longitud y profundidad en tu análisis.\n" +
+"- Devuelve SOLO HTML puro. Sin Markdown (` ```html `). Sin texto inicial o final.";
 
   try {
     var response = await fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
+        model: "claude-sonnet-4-20250514", // Mantenemos el modelo original configurado en tu servidor
+        max_tokens: 8000, // Aumentado drásticamente a 8000 para mayor profundidad
         messages: [{ role: "user", content: prompt }]
       })
     });
@@ -1447,7 +1905,6 @@ window.openInsights = async function() {
     var data = await response.json();
     var resultHTML = data.content && data.content[0] && data.content[0].text ? data.content[0].text : "";
 
-    // Limpiar posibles bloques markdown
     resultHTML = resultHTML.replace(/```html?/gi, '').replace(/```/g, '').trim();
 
     if (!resultHTML) throw new Error("La IA no devolvió contenido.");
@@ -1476,7 +1933,6 @@ window.openInsights = async function() {
 
 function handleFile(file){
   showToast('⏳ Procesando...');
-  // AL IMPORTAR DATA NUEVA, SE BORRA LA CACHÉ
   window.cachedAnalysisHTML = "";
   window.cachedFilterKey = "";
   
@@ -1513,7 +1969,7 @@ function handleFile(file){
         const h2 = s2[1]||[];
         for(let r=2; r<s2.length; r++){
           const row = s2[r]; if(!row) continue;
-          for(let c=1; c<h2.length; c++){
+          for(let c=0; c<h2.length; c++){
             if(row[c] && h2[c]){ const d = String(h2[c]).trim(); const target=newDepts.find(x=>x.toLowerCase()===d.toLowerCase()); if(target) nComm[target].push(String(row[c])); }
           }
         }
@@ -1543,7 +1999,7 @@ function handleFile(file){
 }
 
 function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
-  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart;
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
   document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
@@ -1565,7 +2021,7 @@ async function generateReaderLink(){
     const payload = {
       dirs: DIRS, depts: DEPTS.filter(d => !d.startsWith('PROM. ')), deptMap: DEPT_TO_DIR, qs: QUESTIONS,
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
-      comments: COMMENTS, participation: PARTICIPATION, title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString()
+      comments: COMMENTS, participation: PARTICIPATION, nps: NPS_DATA, title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString()
     };
     
     await window.db.collection("reportes").doc(customId).set(payload);
@@ -1611,13 +2067,17 @@ async function tryLoadFromURL(){
       if(raw.dirs && raw.deptMap) { DIRS = raw.dirs; DEPT_TO_DIR = raw.deptMap; } 
       else { DIRS = ['General']; DEPT_TO_DIR = {}; raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); }
       DEPTS = raw.depts; QUESTIONS = raw.qs; SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
-      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
+      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; NPS_DATA = raw.nps || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
       injectDirectionAverages();
       const t = document.getElementById('dashTitle'); if(t && raw.title) t.textContent = raw.title;
       loader.remove(); initDashboard(); return true;
     } else { throw new Error("No existe"); }
   } catch(err){
-    loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>';
+    loader.innerHTML = `
+      <div style="text-align:center; padding:40px;">
+        <p style="font-family:var(--font);font-weight:600;color:var(--danger);">Error: El reporte no existe o el ID es incorrecto.</p>
+        <button onclick="window.location.href=window.location.pathname" class="btn-insight-master" style="margin-top:20px; animation:none; display:inline-flex;">Ir al Login</button>
+      </div>`;
     return true;
   }
 }
