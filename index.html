@@ -1823,7 +1823,7 @@ window.openInsights = async function() {
 
   var tS=0,tA=0;
   realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
-  var partGlobal = tS>0 ? (tA+"/"+tS+", "+( tA/tS*100).toFixed(1)+"% de respuesta") : "Sin datos";
+  var partGlobal = tS>0 ? (tA+"/"+tS+", "+( tA/tS*100).toFixed(1)+"% de respuesta") : "";
   var partLines = realDepts.map(function(d){
     var p=PARTICIPATION[d]; if(!p||!p.sent) return null;
     var pct=(p.ans/p.sent*100).toFixed(0);
@@ -1842,7 +1842,7 @@ window.openInsights = async function() {
 
   var allComments=[];
   realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
-  allComments=allComments.slice(0,30); // Incrementado para dar más contexto a la IA
+  allComments=allComments.slice(0,30);
 
   // EXTRAER NPS PARA EL PROMPT
   var npsLines = realDepts.map(function(d){
@@ -1857,41 +1857,111 @@ window.openInsights = async function() {
     return null;
   }).filter(Boolean).join("\n");
 
-  var prompt = 
-"Eres un Consultor Senior Experto en Desarrollo Organizacional, Clima Laboral y Calidad de Servicio Interno. Tu tarea es analizar los resultados de una evaluación de servicio interno de una empresa y generar un reporte de nivel directivo EXTREMADAMENTE DETALLADO, PROFUNDO Y EXHAUSTIVO. " +
-"Quiero que entregues todo el valor posible. Tu respuesta debe ser de una longitud entre 3000 y 8000 tokens, desglosando cada aspecto, correlacionando métricas y justificando cada hallazgo.\n\n" +
-"CONTEXTO METODOLÓGICO:\n" +
-"- Departamentos califican el servicio que RECIBEN de otras áreas (escala 1 a 10).\n" +
-"- NPS Interno (Net Promoter Score): Va de -100 a 100. Mide lealtad y satisfacción general. Promotores (9-10), Pasivos (7-8), Detractores (0-6).\n" +
-"- Busca correlaciones: ¿Un área tiene buena calificación de servicio pero NPS negativo? Eso indica que cumplen el proceso pero el trato es malo, o viceversa.\n\n" +
-"DATOS DE LA EVALUACIÓN:\n\n" +
-"1. PARTICIPACIÓN:\n" + partGlobal + "\n" + (partLines ? partLines + "\n" : "") + "\n" +
-"2. NPS (NET PROMOTER SCORE) POR DEPARTAMENTO:\n" + (npsLines ? npsLines : "Sin datos de NPS capturados en esta vista.") + "\n\n" +
-"3. RANKING DE SERVICIO (Promedio General: " + globalAvg + "/10):\n" + deptRanking + "\n\n" +
-"4. CALIFICACIÓN POR PREGUNTA/ASPECTO:\n" + qLines + "\n\n" +
-(fallas.length ? "5. FALLAS SISTÉMICAS (Múltiples áreas fallan en esto):\n" + fallas.join("\n") + "\n\n" : "") +
-(polarizadas.length ? "6. SERVICIO INCONSISTENTE (Polarización):\n" + polarizadas.join("\n") + "\n\n" : "") +
-(allComments.length ? "7. COMENTARIOS CUALITATIVOS (Voz del cliente interno):\n" + allComments.map(function(x,i){return (i+1)+'. ['+x.d+']: "'+x.c+'"';}).join("\n") + "\n\n" : "") +
-"ESTRUCTURA EXIGIDA DEL REPORTE (Usa estrictamente etiquetas HTML: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <table class='insight-table'>, <ul>, <li>, <strong>, <b>):\n\n" +
-"1. 📊 RESUMEN EJECUTIVO: Análisis de participación, el estado general de la organización y el diagnóstico principal.\n" +
-"2. 🎯 ANÁLISIS DE NPS Y CORRELACIÓN: Evalúa el NPS. ¿Quiénes generan lealtad? ¿Quiénes generan fricción? Cruza el NPS con el puntaje de servicio. Crea una tabla HTML comparando áreas.\n" +
-"3. 🏆 FORTALEZAS Y CASOS DE ÉXITO: Qué departamentos son el pilar de la empresa actualmente y qué mejores prácticas demuestran según los datos y comentarios.\n" +
-"4. 🚨 FOCOS ROJOS Y RIESGOS OPERATIVOS: Inmersión profunda en las áreas con peor NPS o puntaje. Conecta los comentarios con los números para explicar EXACTAMENTE qué está fallando y cómo afecta a la empresa.\n" +
-"5. ⚙️ DIAGNÓSTICO DE PROCESOS (FALLAS SISTÉMICAS): Análisis de las preguntas peor puntuadas a nivel global. ¿Qué procesos transversales están rotos?\n" +
-"6. 💬 ANÁLISIS DE LA VOZ DEL CLIENTE: Patrones encontrados en los comentarios cualitativos. Cita textualmente ejemplos clave de los datos provistos.\n" +
-"7. 🚀 PLAN DE ACCIÓN ESTRATÉGICO (Usa <div class='insight-p highlight'>): MÍNIMO 5 iniciativas robustas y muy específicas. Detalla: Área responsable, Acción inmediata, KPI de medición y Resultados esperados.\n\n" +
-"REGLAS FINALES:\n" +
-"- Escribe de forma profesional, directa y consultiva.\n" +
-"- Extiéndete en tus explicaciones. Desglosa los 'porqués'. Oblígate a alcanzar una gran longitud y profundidad en tu análisis.\n" +
-"- Devuelve SOLO HTML puro. Sin Markdown (` ```html `). Sin texto inicial o final.";
+  // ── Detectar qué tipos de datos existen realmente ──
+  var hasParticipation = tS > 0 && partLines.length > 0;
+  var hasNPS = npsLines.length > 0;
+  var hasComments = allComments.length > 0;
+  var hasFallas = fallas.length > 0;
+  var hasPolarizadas = polarizadas.length > 0;
+
+  // ── Construir el bloque de datos de forma adaptativa ──
+  var dataBlock = "";
+  var sectionNum = 1;
+
+  if (hasParticipation) {
+    dataBlock += sectionNum + ". PARTICIPACIÓN:\n" + partGlobal + "\n" + partLines + "\n\n";
+    sectionNum++;
+  }
+  if (hasNPS) {
+    dataBlock += sectionNum + ". NPS (NET PROMOTER SCORE) POR DEPARTAMENTO:\n" + npsLines + "\n\n";
+    sectionNum++;
+  }
+  dataBlock += sectionNum + ". RANKING DE SERVICIO (Promedio General: " + globalAvg + "/10):\n" + deptRanking + "\n\n";
+  sectionNum++;
+  dataBlock += sectionNum + ". CALIFICACIÓN POR PREGUNTA/ASPECTO:\n" + qLines + "\n\n";
+  sectionNum++;
+  if (hasFallas) {
+    dataBlock += sectionNum + ". FALLAS SISTÉMICAS (múltiples áreas coinciden en esto):\n" + fallas.join("\n") + "\n\n";
+    sectionNum++;
+  }
+  if (hasPolarizadas) {
+    dataBlock += sectionNum + ". SERVICIO INCONSISTENTE (alta polarización entre áreas):\n" + polarizadas.join("\n") + "\n\n";
+    sectionNum++;
+  }
+  if (hasComments) {
+    dataBlock += sectionNum + ". COMENTARIOS CUALITATIVOS (voz del cliente interno):\n" + allComments.map(function(x,i){ return (i+1) + '. [' + x.d + ']: "' + x.c + '"'; }).join("\n") + "\n\n";
+    sectionNum++;
+  }
+
+  // ── Construir la estructura del reporte de forma adaptativa ──
+  var reportStructure = "";
+  var rs = 1;
+
+  reportStructure += rs + ". 📊 RESUMEN EJECUTIVO\n   Diagnóstico del estado general del servicio interno. ¿Cuál es la situación? ¿Qué tan preocupante o alentadora es? ¿Cuál es el hallazgo central? Sé directo, con sustento en los datos.\n\n";
+  rs++;
+
+  if (hasParticipation) {
+    reportStructure += rs + ". 📋 ANÁLISIS DE PARTICIPACIÓN\n   ¿Qué dice la tasa de respuesta sobre el nivel de compromiso y la cultura organizacional? ¿Hay áreas con baja participación que podrían estar evitando dar feedback? Conecta esto con los resultados de calidad.\n\n";
+    rs++;
+  }
+
+  if (hasNPS) {
+    reportStructure += rs + ". 🎯 ANÁLISIS DE NPS Y CORRELACIONES\n   Evalúa el NPS de cada área. ¿Quiénes generan lealtad interna real? ¿Quiénes acumulan detractores? Cruza el NPS con el puntaje de servicio: busca brechas (ej. área con buen puntaje pero NPS negativo = cumple el proceso pero el trato es malo). Explica qué significa cada brecha. Incluye una tabla HTML comparativa de NPS vs. Promedio de Servicio.\n\n";
+    rs++;
+  }
+
+  reportStructure += rs + ". 🏆 FORTALEZAS Y CASOS DE ÉXITO\n   ¿Qué áreas son el pilar del servicio interno actualmente? ¿Qué prácticas, actitudes o procesos explican sus buenos resultados según los datos" + (hasComments ? " y los comentarios" : "") + "? ¿Qué puede aprender el resto de la organización de ellas?\n\n";
+  rs++;
+
+  reportStructure += rs + ". 🚨 FOCOS ROJOS Y RIESGOS OPERATIVOS\n   Análisis profundo de las áreas con peores resultados" + (hasNPS ? " y/o NPS más negativo" : "") + ". Cruza los números" + (hasComments ? ", los comentarios" : "") + " y el contexto para explicar qué está fallando exactamente, por qué ocurre y cuál es el impacto real en la operación de la empresa. No te quedes en la superficie.\n\n";
+  rs++;
+
+  if (hasFallas || hasPolarizadas) {
+    reportStructure += rs + ". ⚙️ DIAGNÓSTICO DE PROCESOS Y BRECHAS\n   Analiza los aspectos/preguntas con peor puntuación a nivel organizacional" + (hasPolarizadas ? " y los que presentan mayor polarización entre áreas" : "") + ". ¿Qué procesos transversales están rotos? ¿Qué brechas de consistencia existen entre áreas que deberían ofrecer el mismo estándar?\n\n";
+    rs++;
+  }
+
+  if (hasComments) {
+    reportStructure += rs + ". 💬 VOZ DEL CLIENTE INTERNO\n   Patrones y temas recurrentes en los comentarios. Agrupa por tipo de problema. Cita ejemplos textuales clave de los datos proporcionados. Conecta lo cualitativo con los números: ¿los comentarios explican los puntajes? ¿Revelan algo que los números no muestran?\n\n";
+    rs++;
+  }
+
+  reportStructure += rs + ". 🚀 PLAN DE ACCIÓN ESTRATÉGICO\n   (Usa <div class='insight-p highlight'> para cada iniciativa.)\n   Mínimo 5 iniciativas concretas y bien fundamentadas en los datos. Cada una debe incluir: Área responsable · Acción específica · KPI de medición · Resultado esperado en 90 días. Que sean accionables, no genéricas.\n\n";
+
+  // ── Contexto metodológico (solo incluir lo que aplica) ──
+  var contextoMetodologico =
+    "- Escala de servicio: 1 a 10. Los departamentos son evaluados por el servicio que brindan a sus clientes internos.\n" +
+    "- Umbral de alerta: promedio < 8.0 requiere mejora; < 7.0 es nivel crítico.\n" +
+    "- Polarización: desviación estándar ≥ 1.5 indica servicio muy inconsistente entre evaluadores.\n" +
+    (hasNPS ? "- NPS Interno: rango de -100 a +100. Promotores (9-10), Pasivos (7-8), Detractores (0-6). NPS negativo = más detractores que promotores, señal de fricción interna.\n" : "");
+
+  // ── Armar el prompt final ──
+  var prompt =
+"Eres un Consultor Senior en Desarrollo Organizacional y Calidad de Servicio Interno. " +
+"Analiza los datos de la evaluación de servicio interno que te presento y genera un reporte directivo de alto valor.\n\n" +
+"REGLA FUNDAMENTAL: Trabaja EXCLUSIVAMENTE con la información que está en los datos proporcionados. " +
+"Si un tipo de dato no aparece (NPS, participación, comentarios, etc.), no lo menciones, no lo supongas, no expliques su ausencia. " +
+"Simplemente analiza a profundidad lo que sí tienes.\n\n" +
+"METODOLOGÍA Y CRITERIOS DE ANÁLISIS:\n" +
+contextoMetodologico + "\n" +
+"DATOS DISPONIBLES:\n\n" +
+dataBlock +
+"ESTRUCTURA DEL REPORTE:\n\n" +
+reportStructure +
+"REGLAS DE FORMATO Y ESTILO:\n" +
+"- Usa estas etiquetas HTML: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <table class='insight-table'>, <ul>, <li>, <strong>, <b>.\n" +
+"- Escribe en español. Tono profesional y directo, fácil de leer para un director, sin perder rigor analítico.\n" +
+"- Cada afirmación debe estar respaldada por datos concretos del reporte.\n" +
+"- Extiéndete en los porqués. Conecta causas con consecuencias. Aplica metodologías (SERVQUAL, análisis de brechas, etc.) cuando los datos lo justifiquen.\n" +
+"- Devuelve SOLO HTML puro. Sin markdown, sin bloques de código, sin texto antes o después del HTML.";
 
   try {
     var response = await fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514", // Mantenemos el modelo original configurado en tu servidor
-        max_tokens: 8000, // Aumentado drásticamente a 8000 para mayor profundidad
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8000,
         messages: [{ role: "user", content: prompt }]
       })
     });
